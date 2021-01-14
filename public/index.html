@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Speech to Text</title>
     <link rel="stylesheet" href="style.css" />
+
   </head>
   <body>
     <header>
@@ -68,5 +69,39 @@
         }
       });
     </script>
+    <div id="firebaseui-auth-container"></div>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#config-web-app -->
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-auth.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyDIqH0SGvG8LJLhNjpOHPjgxibiTYoIe4c",
+        authDomain: "fir-51e4b.firebaseapp.com",
+        databaseURL: "https://fir-51e4b-default-rtdb.firebaseio.com",
+        projectId: "fir-51e4b",
+        storageBucket: "fir-51e4b.appspot.com",
+        messagingSenderId: "737341693743",
+        appId: "1:737341693743:web:3a997725a2da74f5d80bda",
+        measurementId: "G-J698PC9H9E"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    <!-- Firebase UI -->
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+    <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css"
+    />
+    <script src="./auth.js"></script>
+
   </body>
 </html>
