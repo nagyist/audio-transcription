@@ -16,3 +16,5 @@ const uiConfig = {
     ],
 };
 ui.start('#firebaseui-auth-container', uiConfig);
+console.log("foo");
+

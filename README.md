@@ -3,4 +3,12 @@
 [Launch in browser](https://redwrasse.github.io/audio-transcription/)
 
 
-![](./speechtext.gif)
+Launch locally w/emulators:
+
+```firebase emulators:start```
+
+Deploy
+
+```firebase deploy```
+
+
