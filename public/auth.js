@@ -3,6 +3,8 @@ const ui = new firebaseui.auth.AuthUI(firebase.auth());
 const uiConfig = {
     callbacks: {
         signInSuccessWithAuthResult(authResult, redirectUrl) {
+            var token = authResult.credential.accessToken;
+            var user = authResult.user;
             return true;
         },
         uiShown() {
@@ -16,5 +18,5 @@ const uiConfig = {
     ],
 };
 ui.start('#firebaseui-auth-container', uiConfig);
-console.log("foo");
+console.log("bar");
 
