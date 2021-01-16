@@ -20,3 +20,6 @@ const uiConfig = {
 ui.start('#firebaseui-auth-container', uiConfig);
 console.log("bar");
 
+// gapi set token ref https://github.com/google/google-api-javascript-client/issues/304
+
+
