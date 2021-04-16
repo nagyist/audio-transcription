@@ -1,0 +1,30 @@
+version: '3.4'
+services:
+  app:
+    build: app
+    image: &img app
+    command: [python3, -m, flask, run, --host=0.0.0.0]
+    environment: &env
+      - MINIO_ACCESS_KEY=EKIAIOSFODNN7EXAMPLE
+      - MINIO_SECRET_KEY=wJblrXUtnFEMI/KM9DENG/bPxRfjCYEXAMPLEKEY
+    ports:
+      - 5000:5000
+    volumes:
+      - ./app:/app
+  web:
+    build: web
+    restart: always
+    ports:
+      - 80:80
+
+  minio:
+    image: minio/minio:RELEASE.2018-11-06T01-01-02Z
+    command: server /export
+    environment: *env
+    ports:
+      - 8080:9000
+    volumes:
+      - minio:/data
+
+volumes:
+  minio:
