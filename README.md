@@ -13,6 +13,13 @@ Results are submitted to the backend as HTTP post requests. May be sensible to c
 
 Results are submitted to a backend server (flask), which writes to a task queue (rabbitmq) requests for persistence to minio, handled by celery workers.
 
+There are 5 container components:
+* `web`
+* `app`
+* `worker`
+* `rabbitmq`
+* `minio`
+
 ```
      
 Object storage
