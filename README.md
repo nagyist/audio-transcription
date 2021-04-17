@@ -11,7 +11,7 @@ The Web Speech API generates for each transcription in progress both 'interim re
 
 Results are submitted to the backend as HTTP post requests. May be sensible to change this to persistent connections, like Websockets.
 
-Results are submitted to a backend server, which writes to a task queue requests for persistence to minio, handled by Celery workers.
+Results are submitted to a backend server (flask), which writes to a task queue (rabbitmq) requests for persistence to minio, handled by celery workers.
 
 ```
      
