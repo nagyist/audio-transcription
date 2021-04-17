@@ -23,6 +23,8 @@
         const button = document.getElementById("button");
         const result = document.getElementById("result");
         const main = document.getElementsByTagName("main")[0];
+        let clock = Date.now();
+        let final_transcript = '';
         let listening = false;
         const SpeechRecognition =
           window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -32,26 +34,61 @@
           const stop = () => {
             main.classList.remove("speaking");
             recognition.stop();
+            console.log(`final transcript: ${final_transcript}`);
+            fetch('http://localhost:5000/final', {
+                method: 'post',
+                mode: 'cors', // cors for development
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({'final': final_transcript})
+            });
+
             button.textContent = "Start listening";
           };
 
           const start = () => {
+            final_transcript = '';
             main.classList.add("speaking");
             recognition.start();
             button.textContent = "Stop listening";
           };
 
           const onResult = event => {
+            let interim_transcript = '';
             result.innerHTML = "";
-            for (const res of event.results) {
-              const text = document.createTextNode(res[0].transcript);
-              const p = document.createElement("p");
-              if (res.isFinal) {
-                p.classList.add("final");
+              for (let i = event.resultIndex; i < event.results.length; ++i) {
+                let resTranscript = event.results[i][0].transcript;
+                const text = document.createTextNode(resTranscript);
+                const p = document.createElement("p");
+                if (event.results[i].isFinal) {
+                  final_transcript += resTranscript;
+                  p.classList.add("final");
+                } else {
+                  // console.log(resTranscript);
+                  interim_transcript += resTranscript;
+
+                  if (Date.now() - clock > 1000 * 5) {
+                      // post interim at most every 5 seconds
+                       console.log(interim_transcript);
+                       fetch('http://localhost:5000/interim', {
+                        method: 'post',
+                        mode: 'cors', // cors for development
+                        credentials: 'same-origin',
+                        headers: {
+                        'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({'interim': interim_transcript})
+                    });
+                    clock = Date.now();
+                  }
+                }
+                p.appendChild(text);
+                result.appendChild(p);
               }
-              p.appendChild(text);
-              result.appendChild(p);
-            }
           };
           recognition.continuous = true;
           recognition.interimResults = true;
