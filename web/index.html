@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Speech to Text</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Speech to Text</h1>
+    </header>
+    <main>
+      <button id="button">Start listening</button>
+      <div id="result"></div>
+      <p id="message" hidden aria-hidden="true">
+        Your browser doesn't support Speech Recognition. Sorry.
+      </p>
+    </main>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const button = document.getElementById("button");
+        const result = document.getElementById("result");
+        const main = document.getElementsByTagName("main")[0];
+        let clock = Date.now();
+        let final_transcript = '';
+        let listening = false;
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (typeof SpeechRecognition !== "undefined") {
+          const recognition = new SpeechRecognition();
+
+          const stop = () => {
+            main.classList.remove("speaking");
+            recognition.stop();
+            console.log(`final transcript: ${final_transcript}`);
+            fetch('http://localhost:5000/final', {
+                method: 'post',
+                mode: 'cors', // cors for development
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({'final': final_transcript})
+            });
+
+            button.textContent = "Start listening";
+          };
+
+          const start = () => {
+            final_transcript = '';
+            main.classList.add("speaking");
+            recognition.start();
+            button.textContent = "Stop listening";
+          };
+
+          const onResult = event => {
+            let interim_transcript = '';
+            result.innerHTML = "";
+              for (let i = event.resultIndex; i < event.results.length; ++i) {
+                let resTranscript = event.results[i][0].transcript;
+                const text = document.createTextNode(resTranscript);
+                const p = document.createElement("p");
+                if (event.results[i].isFinal) {
+                  final_transcript += resTranscript;
+                  p.classList.add("final");
+                } else {
+                  // console.log(resTranscript);
+                  interim_transcript += resTranscript;
+
+                  if (Date.now() - clock > 1000 * 5) {
+                      // post interim at most every 5 seconds
+                       console.log(interim_transcript);
+                       fetch('http://localhost:5000/interim', {
+                        method: 'post',
+                        mode: 'cors', // cors for development
+                        credentials: 'same-origin',
+                        headers: {
+                        'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({'interim': interim_transcript})
+                    });
+                    clock = Date.now();
+                  }
+                }
+                p.appendChild(text);
+                result.appendChild(p);
+              }
+          };
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.addEventListener("result", onResult);
+          button.addEventListener("click", event => {
+            listening ? stop() : start();
+            listening = !listening;
+          });
+        } else {
+          button.remove();
+          const message = document.getElementById("message");
+          message.removeAttribute("hidden");
+          message.setAttribute("aria-hidden", "false");
+        }
+      });
+    </script>
+  </body>
+</html>
