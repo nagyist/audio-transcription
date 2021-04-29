@@ -7,11 +7,11 @@ speech-to-text in the browser and persisting transcriptions.
 
 Currently the 'AI' is just the Web Speech API, and persistence is as object storage with minio. 
 
-The Web Speech API generates for each transcription in progress both 'interim results', which are mutable, and 'final results', which are immutable. Hence this introduces a tradeoff of immutability vs. delay (wait for the Web Speech API to correct itself or persist what we currently have). Currently interim results are submitted every 5 seconds, final results upon stopping recording.
+The Web Speech API generates for each transcription in progress both 'interim results', which are mutable, and 'final results', which are immutable. Currently interim results are submitted every 5 seconds, final results upon stopping recording. The Web Speech API is itself not perfect, so it may make sense to do additional corrections in the backend using both the interim and final results.
 
 Results are submitted to the backend as HTTP post requests. May be sensible to change this to persistent connections, like Websockets.
 
-Results are submitted to a backend server (flask), which writes to a task queue (rabbitmq) requests for persistence to minio, handled by celery workers.
+The system consists of a backend server (flask), which writes to a task queue (rabbitmq) requests for persistence to minio, handled by celery workers.
 
 There are 5 container components:
 * `web`
