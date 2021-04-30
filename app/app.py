@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, \
+    render_template, redirect, url_for
 from flask_cors import CORS
 from tasks import save_final, save_interim
 from celery import Celery
@@ -17,10 +18,27 @@ celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'],
                 include=('tasks',))
 celery.conf.update(app.config)
 
+#
+# @app.route('/')
+# def index():
+#     # !! TODO("verify token before enabling transcription")
+#     return render_template('transcribe.html')
 
-@app.route('/')
-def index():
-    return 'the index page', 200
+
+@app.route('/signin', methods=['POST'])
+def signin():
+    # !! TODO("verify token before enabling transcription")
+    verified = True
+    if verified:
+        return redirect(url_for('transcribe'))
+    else:
+        return "Failed login", 401
+
+
+@app.route('/transcribe')
+def transcribe():
+    # TODO("this should be a protected endpoint")
+    return render_template('transcribe.html')
 
 
 @app.route('/final', methods=['POST'])
@@ -41,3 +59,4 @@ def interim():
     save_interim.delay(interim_transcript)
     print(f'interim: {interim_transcript}')
     return jsonify({"res": "tbd"}), 200
+
